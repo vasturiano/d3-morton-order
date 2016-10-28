@@ -1,6 +1,6 @@
 # d3-hilbert
 
-D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling space. Here's an [example](http://bl.ocks.org/vasturiano/aee11f57aaa6b1ec96f1df386166a396).
+D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling space. Here's an [example](http://bl.ocks.org/vasturiano/db5e9e9cfe77d8c468136dc781ba0cc8).
 
 ## API reference
 
