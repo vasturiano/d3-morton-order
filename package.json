@@ -1,0 +1,35 @@
+{
+  "name": "d3-morton",
+  "version": "0.1.0",
+  "description": "D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling space.",
+  "keywords": [
+    "d3",
+    "z-order",
+    "morton",
+    "space fill",
+    "curve"
+  ],
+  "author": {
+    "name": "Vasco Asturiano",
+    "url": "http://bl.ocks.org/vasturiano"
+  },
+  "license": "GPL-3.0",
+  "main": "build/d3-morton.js",
+  "jsnext:main": "index",
+  "homepage": "https://github.com/vasturiano/d3-morton-order",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vasturiano/d3-morton-order.git"
+  },
+  "scripts": {
+    "build": "rm -rf build && mkdir build && rollup --banner \"$(preamble)\" -f umd -n d3 -o build/d3-morton.js -- index.js",
+    "minify": "uglifyjs build/d3-morton.js -o build/d3-morton.min.js -c -m --preamble \"$(preamble)\"",
+    "prepublish": "npm run build && npm run minify"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "package-preamble": "0.0",
+    "rollup": "0.34",
+    "uglify-js": "2"
+  }
+}
