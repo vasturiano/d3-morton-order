@@ -4,7 +4,7 @@ export default function() {
         // http://bl.ocks.org/jaredwinick/5073432
 
         // http://graphics.stanford.edu/~seander/bithacks.html#InterleaveBMN
-        function point2distance(x, y) {
+        function point2Distance(x, y) {
 
             var B = [0x55555555, 0x33333333, 0x0F0F0F0F, 0x00FF00FF];
             var S = [1, 2, 4, 8];
@@ -22,7 +22,7 @@ export default function() {
             return x | (y << 1);
         }
 
-        function distance2point(d) {
+        function distance2Point(d) {
 
             return [
                 deinterleave(d),
