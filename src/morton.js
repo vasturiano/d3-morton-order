@@ -41,6 +41,11 @@ export default function() {
                 return x;
             }
         }
+
+        return {
+            point2Distance: point2Distance,
+            distance2Point: distance2Point
+        };
     })();
 
     var mortonLayout = {},
