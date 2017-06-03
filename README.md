@@ -2,6 +2,8 @@
 
 D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling curve. Here's an [example](http://bl.ocks.org/vasturiano/db5e9e9cfe77d8c468136dc781ba0cc8).
 
+See also [d3-hilbert](https://github.com/vasturiano/d3-hilbert).
+
 [![NPM](https://nodei.co/npm/d3-morton.png?compact=true)](https://nodei.co/npm/d3-morton/)
 
 ## Quick start
