@@ -13,7 +13,7 @@
     "name": "Vasco Asturiano",
     "url": "http://bl.ocks.org/vasturiano"
   },
-  "license": "GPL-3.0",
+  "license": "MIT",
   "main": "build/d3-morton.js",
   "jsnext:main": "index",
   "homepage": "https://github.com/vasturiano/d3-morton-order",
