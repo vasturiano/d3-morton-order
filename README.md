@@ -41,9 +41,9 @@ d3.zOrder()
 | **getValAtXY**(*num*, *num*) | Returns the reverse translated value on the curve domain found at coordinates *x*,*y*, relative to the canvasWidth. | |
 
 
-[npm-img]: https://img.shields.io/npm/v/d3-morton-order.svg
-[npm-url]: https://npmjs.org/package/d3-morton-order
-[build-size-img]: https://img.shields.io/bundlephobia/minzip/d3-morton-order.svg
-[build-size-url]: https://bundlephobia.com/result?p=d3-morton-order
+[npm-img]: https://img.shields.io/npm/v/d3-morton.svg
+[npm-url]: https://npmjs.org/package/d3-morton
+[build-size-img]: https://img.shields.io/bundlephobia/minzip/d3-morton.svg
+[build-size-url]: https://bundlephobia.com/result?p=d3-morton
 [dependencies-img]: https://img.shields.io/david/vasturiano/d3-morton-order.svg
 [dependencies-url]: https://david-dm.org/vasturiano/d3-morton-order
