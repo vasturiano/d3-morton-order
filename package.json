@@ -1,6 +1,6 @@
 {
   "name": "d3-morton",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling space.",
   "keywords": [
     "d3",
