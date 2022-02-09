@@ -3,7 +3,7 @@ d3-morton
 
 [![NPM package][npm-img]][npm-url]
 [![Build Size][build-size-img]][build-size-url]
-[![Dependencies][dependencies-img]][dependencies-url]
+[![NPM Downloads][npm-downloads-img]][npm-downloads-url]
 
 D3 layout to visualize distance variables using a continuous Morton (Z-order) space-filling curve. Here's an [example](http://bl.ocks.org/vasturiano/db5e9e9cfe77d8c468136dc781ba0cc8).
 
@@ -11,19 +11,19 @@ See also [d3-hilbert](https://github.com/vasturiano/d3-hilbert).
 
 ## Quick start
 
-```
+```js
 import d3ZOrder from 'd3-morton';
 ```
 or
-```
+```js
 d3.zOrder = require('d3-morton');
 ```
 or even
-```
+```html
 <script src="//unpkg.com/d3-morton"></script>
 ```
 then
-```
+```js
 const myRange = { start: 4, length: 9 };
 d3.zOrder()
     .order(2)
@@ -41,9 +41,9 @@ d3.zOrder()
 | **getValAtXY**(*num*, *num*) | Returns the reverse translated value on the curve domain found at coordinates *x*,*y*, relative to the canvasWidth. | |
 
 
-[npm-img]: https://img.shields.io/npm/v/d3-morton.svg
+[npm-img]: https://img.shields.io/npm/v/d3-morton
 [npm-url]: https://npmjs.org/package/d3-morton
-[build-size-img]: https://img.shields.io/bundlephobia/minzip/d3-morton.svg
+[build-size-img]: https://img.shields.io/bundlephobia/minzip/d3-morton
 [build-size-url]: https://bundlephobia.com/result?p=d3-morton
-[dependencies-img]: https://img.shields.io/david/vasturiano/d3-morton-order.svg
-[dependencies-url]: https://david-dm.org/vasturiano/d3-morton-order
+[npm-downloads-img]: https://img.shields.io/npm/dt/d3-morton
+[npm-downloads-url]: https://www.npmtrends.com/d3-morton
