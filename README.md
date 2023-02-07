@@ -14,11 +14,7 @@ See also [d3-hilbert](https://github.com/vasturiano/d3-hilbert).
 ```js
 import d3ZOrder from 'd3-morton';
 ```
-or
-```js
-d3.zOrder = require('d3-morton');
-```
-or even
+or using a *script* tag
 ```html
 <script src="//unpkg.com/d3-morton"></script>
 ```
