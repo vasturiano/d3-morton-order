@@ -16,7 +16,7 @@ import d3ZOrder from 'd3-morton';
 ```
 or using a *script* tag
 ```html
-<script src="//unpkg.com/d3-morton"></script>
+<script src="//cdn.jsdelivr.net/npm/d3-morton"></script>
 ```
 then
 ```js
