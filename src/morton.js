@@ -89,6 +89,10 @@ export default function() {
             });
         return zOrder.point2Distance(xy[0], xy[1]);
     };
+    
+    mortonLayout.getXyAtVal = function(dist) {
+	    return zOrder.distance2Point(dist);
+    };
 
     return mortonLayout;
 
