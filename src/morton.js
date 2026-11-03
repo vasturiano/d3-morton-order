@@ -42,9 +42,40 @@ export default function() {
       }
     }
 
+    function point2DistanceBigInt(x, y, order) {
+      let distance = 0n;
+
+      for (let bit = 0; bit < order; bit++) {
+        const sourceBit = BigInt(bit);
+        distance |= ((x >> sourceBit) & 1n) << (sourceBit * 2n);
+        distance |= ((y >> sourceBit) & 1n) << (sourceBit * 2n + 1n);
+      }
+
+      return distance;
+    }
+
+    function distance2PointBigInt(distance, order) {
+      let x = 0n;
+      let y = 0n;
+
+      for (let bit = 0; bit < order; bit++) {
+        const sourceBit = BigInt(bit);
+        x |= ((distance >> (sourceBit * 2n)) & 1n) << sourceBit;
+        y |= ((distance >> (sourceBit * 2n + 1n)) & 1n) << sourceBit;
+      }
+
+      if (order <= 53) {
+        return [Number(x), Number(y)];
+      }
+
+      return [x, y];
+    }
+
     return {
       point2Distance: point2Distance,
-      distance2Point: distance2Point
+      distance2Point: distance2Point,
+      point2DistanceBigInt: point2DistanceBigInt,
+      distance2PointBigInt: distance2PointBigInt
     };
   })();
 
@@ -59,7 +90,7 @@ export default function() {
     return mortonLayout;
   };
 
-  // Note: Maximum safe order is 26, due to JS numbers upper-boundary of 53 bits
+  // Orders above 26 use BigInt to preserve distance precision.
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
   mortonLayout.order = function(_) {
     if (!arguments.length) return order;
@@ -83,6 +114,14 @@ export default function() {
   };
 
   mortonLayout.getValAtXY = function(x, y) {
+    if (order > 26) {
+      const n = 2 ** order;
+      const xy = [x, y].map(function(coord) {
+        return BigInt(Math.floor(coord * n / canvasWidth));
+      });
+      return zOrder.point2DistanceBigInt(xy[0], xy[1], order);
+    }
+
     const n = Math.pow(2, order);
     const xy = [x, y].map(function(coord) {
       return Math.floor(coord * n / canvasWidth);
@@ -95,6 +134,10 @@ export default function() {
   //
 
   function getZOrderPath(start, length, order, sideSize, simplifyCurves) {
+
+    if (order > 26 || typeof start === "bigint" || typeof length === "bigint") {
+      return getBigIntZOrderPath(start, length, order, sideSize, simplifyCurves);
+    }
 
     if (simplifyCurves) {
       // Adjust resolution
@@ -131,5 +174,80 @@ export default function() {
       cellWidth: cellWidth,
       pathVertices: vertices
     };
+  }
+
+  function getBigIntZOrderPath(start, length, order, sideSize, simplifyCurves) {
+    if (!Number.isInteger(order) || order < 0) {
+      throw new RangeError("Morton order must be a non-negative integer");
+    }
+
+    if (typeof start === "number" && !Number.isFinite(start) ||
+        typeof length === "number" && !Number.isFinite(length)) {
+      throw new RangeError("Morton range values must be finite");
+    }
+
+    if (typeof start === "number" && Number.isInteger(start)) {
+      start = toBigInt(start);
+    }
+    if (typeof length === "number" && Number.isInteger(length)) {
+      length = toBigInt(length);
+    }
+
+    if (simplifyCurves) {
+      while (!isInteger(start) || !isInteger(length)) {
+        start = multiplyByFour(start);
+        length = multiplyByFour(length);
+        order += 1;
+      }
+
+      start = toBigInt(start);
+      length = toBigInt(length);
+
+      while (!(start % 4n) && !(length % 4n) && order > 0) {
+        start /= 4n;
+        length /= 4n;
+        order -= 1;
+      }
+    } else {
+      start = toBigInt(start);
+      length = toBigInt(length);
+    }
+
+    const maxPos = 4n ** BigInt(order);
+    start = start < maxPos ? start : maxPos;
+    length = length < maxPos - start ? length : maxPos - start;
+
+    const nSide = 2 ** order;
+    const cellWidth = sideSize / nSide;
+    const vertices = [];
+
+    for (let i = 0n; i < length; i++) {
+      vertices.push(zOrder.distance2PointBigInt(start + i, order));
+    }
+
+    return {
+      cellWidth: cellWidth,
+      pathVertices: vertices
+    };
+  }
+
+  function isInteger(value) {
+    return typeof value === "bigint" || Number.isInteger(value);
+  }
+
+  function multiplyByFour(value) {
+    return typeof value === "bigint" ? value * 4n : value * 4;
+  }
+
+  function toBigInt(value) {
+    if (typeof value === "bigint") {
+      return value;
+    }
+
+    if (!Number.isSafeInteger(value)) {
+      throw new RangeError("Morton range numbers must be safe integers; use BigInt for larger values");
+    }
+
+    return BigInt(value);
   }
 }

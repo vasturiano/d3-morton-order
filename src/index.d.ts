@@ -1,8 +1,8 @@
 export type MortonRange<T extends object = {}> = T & {
-  start: number;
-  length: number;
+  start: number | bigint;
+  length: number | bigint;
   cellWidth?: number;
-  pathVertices?: [number, number][];
+  pathVertices?: [number | bigint, number | bigint][];
 };
 
 export interface MortonLayout {
@@ -13,7 +13,7 @@ export interface MortonLayout {
   simplifyCurves(): boolean;
   simplifyCurves(value: boolean): this;
   layout<T extends object>(range: MortonRange<T>): this;
-  getValAtXY(x: number, y: number): number;
+  getValAtXY(x: number, y: number): number | bigint;
 }
 
 declare function morton(): MortonLayout;

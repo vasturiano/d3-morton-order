@@ -25,6 +25,31 @@ function decodeMorton(value, order) {
   return [x, y];
 }
 
+function encodeMortonBigInt(x, y, order) {
+  let value = 0n;
+
+  for (let bit = 0; bit < order; bit++) {
+    const position = BigInt(bit);
+    value |= ((x >> position) & 1n) << (position * 2n);
+    value |= ((y >> position) & 1n) << (position * 2n + 1n);
+  }
+
+  return value;
+}
+
+function decodeMortonBigInt(value, order) {
+  let x = 0n;
+  let y = 0n;
+
+  for (let bit = 0; bit < order; bit++) {
+    const position = BigInt(bit);
+    x |= ((value >> (position * 2n)) & 1n) << position;
+    y |= ((value >> (position * 2n + 1n)) & 1n) << position;
+  }
+
+  return [x, y];
+}
+
 describe("Morton layout API", function() {
   it("exposes defaults and chainable, coercing setters", function() {
     const layout = morton();
@@ -180,5 +205,119 @@ describe("Morton coordinate mapping", function() {
     assert.equal(range.cellWidth, 1);
     assert.deepEqual(range.pathVertices, [[coordinate, coordinate]]);
     assert.equal(layout.getValAtXY(coordinate + 0.5, coordinate + 0.5), value);
+  });
+
+  it("retains numeric distances and vertices at order 26", function() {
+    const layout = morton().canvasWidth(2 ** 26).order(26).simplifyCurves(false);
+    const range = { start: 0, length: 1 };
+
+    layout.layout(range);
+
+    assert.equal(typeof layout.getValAtXY(0.5, 0.5), "number");
+    assert.deepEqual(range.pathVertices, [[0, 0]]);
+  });
+
+  it("uses exact BigInt distances and numeric vertices above order 26", function() {
+    const order = 27;
+    const x = 0x1234567n;
+    const y = 0x6543210n;
+    const value = encodeMortonBigInt(x, y, order);
+    const layout = morton().canvasWidth(2 ** order).order(order).simplifyCurves(false);
+    const range = { start: value, length: 1n };
+
+    layout.layout(range);
+
+    assert.equal(value > BigInt(Number.MAX_SAFE_INTEGER), true);
+    assert.equal(layout.getValAtXY(Number(x) + 0.5, Number(y) + 0.5), value);
+    assert.deepEqual(range.pathVertices, [[Number(x), Number(y)]]);
+
+    const safeNumberRange = { start: Number.MAX_SAFE_INTEGER, length: 1 };
+    layout.layout(safeNumberRange);
+    assert.deepEqual(safeNumberRange.pathVertices, [
+      decodeMortonBigInt(BigInt(Number.MAX_SAFE_INTEGER), order).map(Number)
+    ]);
+  });
+
+  it("clips high-order BigInt ranges at the domain boundary", function() {
+    const order = 27;
+    const domainLength = 4n ** BigInt(order);
+    const range = { start: domainLength - 2n, length: 5n };
+
+    morton().order(order).simplifyCurves(false).layout(range);
+
+    assert.deepEqual(range.pathVertices, [
+      decodeMortonBigInt(domainLength - 2n, order),
+      decodeMortonBigInt(domainLength - 1n, order)
+    ].map(([x, y]) => [Number(x), Number(y)]));
+  });
+
+  it("simplifies aligned high-order BigInt ranges", function() {
+    const order = 27;
+    const start = 3n * (4n ** 25n);
+    const length = 4n ** 25n;
+    const range = { start, length };
+
+    morton().canvasWidth(8).order(order).layout(range);
+
+    assert.equal(range.cellWidth, 2);
+    assert.deepEqual(range.pathVertices, [[1, 1]]);
+  });
+
+  it("raises high-order resolution for fractional numeric ranges", function() {
+    const range = { start: 0.25, length: 0.5 };
+
+    morton().order(27).layout(range);
+
+    assert.equal(range.cellWidth, 2 ** -28);
+    assert.deepEqual(range.pathVertices, [[1, 0], [0, 1]]);
+  });
+
+  it("preserves safe integer precision while scaling a fractional range", function() {
+    const start = Number.MAX_SAFE_INTEGER;
+    const range = { start, length: 0.25 };
+
+    morton().order(27).layout(range);
+
+    assert.deepEqual(range.pathVertices, [
+      decodeMortonBigInt(BigInt(start) * 4n, 28).map(Number)
+    ]);
+  });
+
+  it("scales a BigInt range value alongside a fractional value", function() {
+    const range = { start: 0.25, length: 1n };
+
+    morton().order(27).layout(range);
+
+    assert.deepEqual(range.pathVertices, [[1, 0], [0, 1], [1, 1], [2, 0]]);
+  });
+
+  it("returns BigInt vertices above order 53 and maps high coordinates exactly", function() {
+    const order = 54;
+    const x = 1n << 53n;
+    const value = encodeMortonBigInt(x, 0n, order);
+    const layout = morton().canvasWidth(2 ** order).order(order).simplifyCurves(false);
+    const range = { start: value, length: 1n };
+
+    layout.layout(range);
+
+    assert.deepEqual(range.pathVertices, [[x, 0n]]);
+    assert.equal(layout.getValAtXY(Number(x), 0), value);
+  });
+
+  it("rejects unsafe numeric values and invalid high orders", function() {
+    const layout = morton().order(27);
+
+    assert.throws(() => layout.layout({ start: Number.MAX_SAFE_INTEGER + 1, length: 1 }), RangeError);
+    assert.throws(() => layout.layout({ start: Infinity, length: 1 }), RangeError);
+    assert.throws(() => morton().order(27.5).layout({ start: 0, length: 1 }), RangeError);
+  });
+
+  it("returns no vertices for BigInt ranges beyond the high-order domain", function() {
+    const domainLength = 4n ** 27n;
+    const range = { start: domainLength + 1n, length: 1n };
+
+    morton().order(27).simplifyCurves(false).layout(range);
+
+    assert.deepEqual(range.pathVertices, []);
   });
 });
