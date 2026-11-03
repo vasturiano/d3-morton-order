@@ -19,7 +19,9 @@
   "unpkg": "dist/d3-morton.min.js",
   "main": "dist/d3-morton.mjs",
   "module": "dist/d3-morton.mjs",
+  "types": "dist/d3-morton.d.ts",
   "exports": {
+    "types": "./dist/d3-morton.d.ts",
     "umd": "./dist/d3-morton.min.js",
     "default": "./dist/d3-morton.mjs"
   },
@@ -45,9 +47,12 @@
     "@rollup/plugin-commonjs": "^29.0.3",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^1.0.0",
+    "@typescript/typescript6": "^6.0.2",
     "mocha": "^12.0.3",
     "rimraf": "^6.1.3",
-    "rollup": "^4.64.6"
+    "rollup": "^4.64.6",
+    "rollup-plugin-dts": "^6.5.1",
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=12"

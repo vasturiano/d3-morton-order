@@ -2,6 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonJs from '@rollup/plugin-commonjs';
 import babel from '@rollup/plugin-babel';
 import terser from '@rollup/plugin-terser';
+import dts from 'rollup-plugin-dts';
 
 import pkg from './package.json' with { type: 'json' };
 const { name, homepage, version, dependencies } = pkg;
@@ -49,4 +50,12 @@ export default [
       babel()
     ]
   },
+  { // expose TS declarations
+    input: 'src/index.d.ts',
+    output: [{
+      file: `dist/${name}.d.ts`,
+      format: 'es'
+    }],
+    plugins: [dts()]
+  }
 ];
