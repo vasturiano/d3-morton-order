@@ -31,6 +31,7 @@
   "scripts": {
     "build": "rimraf dist && rollup -c",
     "dev": "rollup -w -c",
+    "test": "mocha \"test/**/*.test.js\"",
     "prepare": "npm run build"
   },
   "files": [
